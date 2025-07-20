@@ -16,6 +16,17 @@ services:
       - DB_PASSWORD=${POSTGRES_PASSWORD}
       - DB_NAME=financeapp
 
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: npm run dev -- --host 0.0.0.0
+    depends_on:
+      - backend
+
   db:
     image: postgres:13
     container_name: postgres_db
