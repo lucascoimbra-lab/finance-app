@@ -44,6 +44,29 @@ app.get('/test_connection', async(req, res) => {
 
 });
 
+// ENDPOINT PARA VERIFICAR E-MAIL
+app.post('/check-email', async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ message: 'E-mail é obrigatório.' });
+  }
+
+  try {
+    const result = await db_client.query('SELECT id_usuario, nome FROM usuarios WHERE email = $1', [email]);
+
+    if (result.rows.length > 0) {
+      res.json({ isRegistered: true, name: result.rows[0].nome });
+    } else {
+      res.json({ isRegistered: false });
+    }
+  } catch (error) {
+    console.error('Erro ao verificar e-mail no banco de dados:', error);
+
+    res.status(500).json({ error: 'Erro interno no servidor.' });
+  }
+});
+
 // ENDPOINT PARA CADASTRAR USUÁRIOS
 
 app.post('/usuarios', async (req, res) => {
