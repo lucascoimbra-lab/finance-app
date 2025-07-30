@@ -1,8 +1,9 @@
 import { Client } from 'pg'
 import express from 'express';
 import cors from 'cors';
+import bcrypt from 'bcrypt';
 
-
+const saltRounds = 10;
 const app = express();
 const port = 3000;
 
@@ -67,19 +68,50 @@ app.post('/check-email', async (req, res) => {
   }
 });
 
+// ENDPOINT PARA VERIFICAR SENHA
+app.post('/check-password', async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ message: 'E-mail e senha são obrigatórios.' });
+  }
+
+  try {
+    const result = await db_client.query(
+      'SELECT senha_hash FROM usuarios WHERE email = $1',
+      [email]
+    );
+
+    const resultSenhaHash = result.rows[0].senha_hash;
+    const passwordMatch = await bcrypt.compare(password, resultSenhaHash);
+    res.json({ isValid: passwordMatch });
+
+  } catch (error) {
+    console.error('Erro ao validar senha:', error);
+    res.status(500).json({ error: 'Erro interno no servidor.' });
+  }
+});
+
+
 // ENDPOINT PARA CADASTRAR USUÁRIOS
 
 app.post('/usuarios', async (req, res) => {
   try {
     const { nome, email, senha } = req.body;
 
+    if (!nome || !email || !senha) {
+      return res.status(400).json({ error: 'Nome, email e senha são obrigatórios.' });
+    }
+
+    const senhaHash = await bcrypt.hash(senha, saltRounds);
+
     const query = `
-      INSERT INTO usuarios (nome, email, senha)
+      INSERT INTO usuarios (nome, email, senha_hash)
       VALUES ($1, $2, $3)
-      RETURNING *;
+      RETURNING id_usuario, nome, email;
     `;
 
-    const values = [nome, email, senha];
+    const values = [nome, email, senhaHash];
 
     const result = await db_client.query(query, values);
 
