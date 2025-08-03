@@ -132,25 +132,58 @@ app.post('/usuarios', async (req, res) => {
   }
 });
 
-// ENDPOINT PARA CADASTRAR DISPONIBILIDADE INICIAL
+// ENDPOINT PARA CADASTRAR SALDOS MENSAIS
 
-app.post('/disponibilidade_inicial', async (req, res) => {
+app.post('/saldos_mensais', async (req, res) => {
   try {
-    const { valor, mes, ano } = req.body;
+    const { id_usuario, saldo_disponivel, saldo_despesas_variaveis, mes, ano } = req.body;
+
+    if (!id_usuario || saldo_disponivel === undefined || saldo_despesas_variaveis === undefined || !mes || !ano) {
+      return res.status(400).json({ error: 'Todos os campos são obrigatórios (id_usuario, saldo_disponivel, saldo_despesas_variaveis, mes, ano)' });
+    }
 
     const query = `
-      INSERT INTO disponibilidade_inicial (valor, mes, ano)
-      VALUES ($1, $2, $3)
+      INSERT INTO saldos_mensais (id_usuario, saldo_disponivel, saldo_despesas_variaveis, mes, ano)
+      VALUES ($1, $2, $3, $4, $5)
       RETURNING *;
     `;
 
-    const values = [valor, mes, ano];
+    const values = [id_usuario, saldo_disponivel, saldo_despesas_variaveis, mes, ano];
 
     const result = await db_client.query(query, values);
 
     res.status(201).json(result.rows[0]);
   } catch (error) {
-    console.error('Erro ao inserir disponibilidade:', error);
+    console.error('Erro ao inserir saldos mensais:', error);
+    res.status(500).json({ error: 'Erro interno no servidor.' });
+  }
+});
+
+// ENDPOINT PARA OBTER SALDOS MENSAIS
+app.get('/saldos_mensais', async (req, res) => {
+  try {
+    const { id_usuario, mes, ano } = req.query;
+
+    if (!id_usuario || !mes || !ano) {
+      return res.status(400).json({ error: 'id_usuario, mes e ano são obrigatórios.' });
+    }
+
+    const query = `
+      SELECT saldo_disponivel, saldo_despesas_variaveis
+      FROM saldos_mensais
+      WHERE id_usuario = $1 AND mes = $2 AND ano = $3;
+    `;
+
+    const result = await db_client.query(query, [id_usuario, mes, ano]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Saldos mensais não encontrados para o período.' });
+    }
+
+    res.status(200).json(result.rows[0]);
+
+  } catch (error) {
+    console.error('Erro ao buscar saldos mensais:', error);
     res.status(500).json({ error: 'Erro interno no servidor.' });
   }
 });
@@ -174,6 +207,34 @@ app.post('/debitos', async (req, res) => {
     res.status(201).json(result.rows[0]);
   } catch (error) {
     console.error('Erro ao inserir débito:', error);
+    res.status(500).json({ error: 'Erro interno no servidor.' });
+  }
+});
+
+// ENDPOINT PARA OBTER DÉBITOS
+app.get('/obter_debitos', async (req, res) => {
+  try {
+    const { id_usuario, mes, ano } = req.query; 
+
+    if (!id_usuario || !mes || !ano) {
+      return res.status(400).json({ error: 'id_usuario, mes e ano são obrigatórios.' });
+    }
+
+    const query = `
+      SELECT id_debito, desc_debito, valor, vencimento, repeticoes
+      FROM debitos
+      WHERE id_usuario = $1
+      AND EXTRACT(MONTH FROM vencimento) = $2
+      AND EXTRACT(YEAR FROM vencimento) = $3
+      ORDER BY vencimento ASC;
+    `;
+
+    const result = await db_client.query(query, [id_usuario, mes, ano]);
+
+    res.status(200).json(result.rows);
+
+  } catch (error) {
+    console.error('Erro ao buscar débitos:', error);
     res.status(500).json({ error: 'Erro interno no servidor.' });
   }
 });

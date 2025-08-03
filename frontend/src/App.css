@@ -22,6 +22,13 @@ body {
   margin: 0 auto;
 }
 
+.month-selector {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1em; 
+}
+
 .title-text {
   font-family: Arial, sans-serif;
   font-size: 2.5em;
@@ -38,6 +45,20 @@ body {
   white-space: nowrap;
 }
 
+.month-nav-btn {
+  background-color: transparent;
+  border: none;
+  font-size: 2.5em;
+  color: #6495ED;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.3s ease;
+}
+
+.month-nav-btn:hover {
+  transform: scale(1.1);
+}
+
 .default-button {
   font-family: Arial, sans-serif;
   font-size: 1.5em;
@@ -51,4 +72,118 @@ body {
   text-decoration: none;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   transition: background-color 0.3s ease;
+}
+
+.saldo-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 1em 0;
+  padding: 1em;
+  background-color: rgb(215, 238, 245);
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  gap: 20px;
+}
+
+.saldo-valor {
+  font-size: 2em;
+  font-weight: bold;
+  color: black;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.subtext {
+  font-size: 0.8em;
+  color: gray;
+  margin-top: -10px;
+}
+
+.checklist {
+  background-color: #eeeee1;
+  padding: 1em;
+  border-radius: 10px;
+  margin-top: 1em;
+}
+
+.checklist h3 {
+  margin-top: 0;
+  font-weight: bold;
+}
+
+.checklist table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.checklist th, .checklist td {
+  padding: 0.5em;
+  text-align: left;
+}
+
+.edit-btn {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.check-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.resumo {
+  margin-top: 1em;
+  text-align: left;
+}
+
+.resumo p {
+  font-size: 1.1em;
+  margin: 0.4em 0;
+}
+
+.percentual {
+  float: right;
+  margin-right: 1em;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.valor {
+  font-weight: bold;
+}
+
+.vermelho {
+  color: #C40000;
+}
+
+.laranja {
+  color: #F29600;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.verde {
+  color: #00A000;
+}
+
+.botoes-footer {
+  display: flex;
+  justify-content: center;
+  gap: 1em;
+  margin-top: 2em;
+}
+
+.default-button.cinza {
+  background-color: #D3D3D3;
+  color: #333;
 }

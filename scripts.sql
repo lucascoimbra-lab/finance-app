@@ -19,12 +19,14 @@ CREATE TABLE usuarios (
     senha_hash VARCHAR(100) NOT NULL
 );
 
--- Disponibilidade
-CREATE TABLE disponibilidade_inicial (
-    id_disponibilidade_inicial SERIAL PRIMARY KEY,
-    valor NUMERIC(10, 2) NOT NULL,
-    mes INT CHECK (mes BETWEEN 1 AND 12),
-    ano INT CHECK (ano >= 2025 AND ano <= 2200)
+-- Saldos Mensais
+CREATE TABLE saldos_mensais (
+    id_saldo_mensal SERIAL PRIMARY KEY,
+    id_usuario INT NOT NULL,
+    saldo_disponivel NUMERIC(10, 2) NOT NULL,
+    saldo_despesas_variaveis NUMERIC(10, 2) NOT NULL,
+    mes INT CHECK (mes BETWEEN 1 AND 12) NOT NULL,
+    ano INT CHECK (ano >= 2025 AND ano <= 2200) NOT NULL
 );
 
 -- Débitos

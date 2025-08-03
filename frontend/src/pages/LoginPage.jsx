@@ -92,7 +92,9 @@ function LoginPage() {
 
         if (data?.id_usuario) {
           toast.success('Cadastro realizado com sucesso!');
-          //navigate('/');
+          setTimeout(() => {
+            navigate('/');
+          }, 1500);
         } else {
           toast.error(data.message || 'Erro ao cadastrar.');
         }
