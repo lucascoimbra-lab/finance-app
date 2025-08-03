@@ -14,6 +14,13 @@ function LoginPage() {
   const [confirmarSenha, setConfirmarSenha] = useState('');
   const navigate = useNavigate();
 
+  const redirectToHome = (id_usuario) => {
+    localStorage.setItem('id_usuario', id_usuario);
+    setTimeout(() => {
+      navigate('/');
+    }, 1500);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -59,7 +66,8 @@ function LoginPage() {
         const data = await response.json();
 
         if (data.isValid) {
-          navigate('/');
+          toast.success(`Bem-vindo, ${nome}!`);
+          redirectToHome(data.id_usuario);
         } else {
           toast.error('Senha incorreta!');
         }
@@ -92,9 +100,7 @@ function LoginPage() {
 
         if (data?.id_usuario) {
           toast.success('Cadastro realizado com sucesso!');
-          setTimeout(() => {
-            navigate('/');
-          }, 1500);
+          redirectToHome(data.id_usuario);
         } else {
           toast.error(data.message || 'Erro ao cadastrar.');
         }
@@ -108,7 +114,7 @@ function LoginPage() {
   return (
     <div className="container">
       <div className="welcome">
-        <h1 className="title-text">Bem vindo</h1>
+        <h1 className="title-text">Bem vindo(a)</h1>
       </div>
       <br />
       <div className="logo">

@@ -81,18 +81,24 @@ app.post('/check-password', async (req, res) => {
 
   try {
     const result = await db_client.query(
-      'SELECT senha_hash FROM usuarios WHERE email = $1',
+      'SELECT id_usuario, senha_hash FROM usuarios WHERE email = $1',
       [email]
     );
 
-    const resultSenhaHash = result.rows[0]?.senha_hash;
+    const usuario = result.rows[0];
 
-    if (!resultSenhaHash) {
+    if (!usuario) {
       return res.status(404).json({ error: 'Usuário não encontrado.' });
     }
 
-    const senhaConfere = await bcrypt.compare(senha, resultSenhaHash);
-    res.json({ isValid: senhaConfere });
+    const senhaConfere = await bcrypt.compare(senha, usuario.senha_hash);
+
+    if (senhaConfere) {
+      res.json({ isValid: true, id_usuario: usuario.id_usuario });
+    } else {
+      res.json({ isValid: false });
+    }
+
   } catch (error) {
     console.error('Erro ao validar senha:', error);
     res.status(500).json({ error: 'Erro interno no servidor.' });
@@ -214,7 +220,7 @@ app.post('/debitos', async (req, res) => {
 // ENDPOINT PARA OBTER DÉBITOS
 app.get('/obter_debitos', async (req, res) => {
   try {
-    const { id_usuario, mes, ano } = req.query; 
+    const { id_usuario, mes, ano } = req.query;
 
     if (!id_usuario || !mes || !ano) {
       return res.status(400).json({ error: 'id_usuario, mes e ano são obrigatórios.' });

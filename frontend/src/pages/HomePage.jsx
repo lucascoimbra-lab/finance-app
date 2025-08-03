@@ -5,6 +5,10 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function HomePage() {
+  const navigate = useNavigate();
+
+  const idUsuario = localStorage.getItem('id_usuario');
+
   const [dataAtual, setDataAtual] = useState(new Date());
   const [debitos, setDebitos] = useState([]);
   const [erro, setErro] = useState(null);
@@ -12,7 +16,11 @@ function HomePage() {
   const [saldoDisponivel, setSaldoDisponivel] = useState(0);
   const [saldoDespesasVariaveis, setSaldoDespesasVariaveis] = useState(0);
 
-  const idUsuario = 1;
+  useEffect(() => {
+    if (!idUsuario) {
+      navigate('/login');
+    }
+  }, [idUsuario, navigate]);
 
   const avancarMes = () => {
     setDataAtual(prevDate => {
@@ -44,7 +52,7 @@ function HomePage() {
     const buscarSaldos = async () => {
       try {
         const resposta = await fetch(`http://localhost:3000/saldos_mensais?id_usuario=${idUsuario}&mes=${mes}&ano=${ano}`);
-        
+
         if (!resposta.ok) {
           if (resposta.status === 404) {
             setSaldoDisponivel(0);
@@ -69,7 +77,7 @@ function HomePage() {
     const buscarDebitos = async () => {
       try {
         const resposta = await fetch(`http://localhost:3000/obter_debitos?id_usuario=${idUsuario}&mes=${mes}&ano=${ano}`);
-        
+
         if (!resposta.ok) {
           throw new Error('Erro ao carregar os débitos');
         }
@@ -78,7 +86,7 @@ function HomePage() {
         setDebitos(dados);
         const total = dados.reduce((acc, debito) => acc + parseFloat(debito.valor), 0);
         setTotalDebitos(total);
-        
+
       } catch (erro) {
         console.error('Erro ao buscar débitos:', erro);
         setErro('Não foi possível carregar a lista de débitos.');
@@ -92,13 +100,17 @@ function HomePage() {
   }, [idUsuario, dataAtual]);
 
   const saldoNaoComprometido = saldoDisponivel - totalDebitos - saldoDespesasVariaveis;
-  
-  const totalGeral = saldoDisponivel; 
+
+  const totalGeral = saldoDisponivel;
   const percentualDebitos = totalGeral > 0 ? (totalDebitos / totalGeral) * 100 : 0;
   const percentualDespesasVariaveis = totalGeral > 0 ? (saldoDespesasVariaveis / totalGeral) * 100 : 0;
   const percentualNaoComprometido = totalGeral > 0 ? (saldoNaoComprometido / totalGeral) * 100 : 0;
 
-  const meses = [ 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro' ];
+  const meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+
+  if (!idUsuario) {
+    return null;
+  }
 
   return (
     <div className="container">
@@ -113,7 +125,7 @@ function HomePage() {
           <h2>Saldo disponível</h2>
         </div>
         <div className="saldo-valor">
-          R$ {formatarMoeda(saldoDisponivel)} 
+          R$ {formatarMoeda(saldoDisponivel)}
           <button className="edit-btn">✏️</button>
         </div>
       </div>
