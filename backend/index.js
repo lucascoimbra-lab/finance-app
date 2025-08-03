@@ -1,4 +1,4 @@
-import { Client } from 'pg'
+import { Client } from 'pg';
 import express from 'express';
 import cors from 'cors';
 import bcrypt from 'bcrypt';
@@ -18,9 +18,9 @@ const db_client = new Client({
   host: process.env.DB_HOST,
   port: 5432,
   database: 'financeapp',
-})
+});
 
-await db_client.connect()
+await db_client.connect();
 
 // ENDPOINT PADRÃO DO FRAMEWORK
 
@@ -30,7 +30,7 @@ app.get('/', (req, res) => {
 
 // ENDPOINT TEST_CONNECTION
 
-app.get('/test_connection', async(req, res) => {
+app.get('/test_connection', async (req, res) => {
   await db_client.query(`
     UPDATE test_connection
     SET counter = counter + 1
@@ -42,10 +42,10 @@ app.get('/test_connection', async(req, res) => {
   `);
 
   res.send(result.rows[0]);
-
 });
 
 // ENDPOINT PARA VERIFICAR E-MAIL
+
 app.post('/check-email', async (req, res) => {
   const { email } = req.body;
 
@@ -54,25 +54,28 @@ app.post('/check-email', async (req, res) => {
   }
 
   try {
-    const result = await db_client.query('SELECT id_usuario, nome FROM usuarios WHERE email = $1', [email]);
+    const result = await db_client.query(
+      'SELECT id_usuario, nome FROM usuarios WHERE email = $1',
+      [email]
+    );
 
     if (result.rows.length > 0) {
-      res.json({ isRegistered: true, name: result.rows[0].nome });
+      res.json({ isRegistered: true, nome: result.rows[0].nome });
     } else {
       res.json({ isRegistered: false });
     }
   } catch (error) {
     console.error('Erro ao verificar e-mail no banco de dados:', error);
-
     res.status(500).json({ error: 'Erro interno no servidor.' });
   }
 });
 
 // ENDPOINT PARA VERIFICAR SENHA
-app.post('/check-password', async (req, res) => {
-  const { email, password } = req.body;
 
-  if (!email || !password) {
+app.post('/check-password', async (req, res) => {
+  const { email, senha } = req.body;
+
+  if (!email || !senha) {
     return res.status(400).json({ message: 'E-mail e senha são obrigatórios.' });
   }
 
@@ -82,16 +85,19 @@ app.post('/check-password', async (req, res) => {
       [email]
     );
 
-    const resultSenhaHash = result.rows[0].senha_hash;
-    const passwordMatch = await bcrypt.compare(password, resultSenhaHash);
-    res.json({ isValid: passwordMatch });
+    const resultSenhaHash = result.rows[0]?.senha_hash;
 
+    if (!resultSenhaHash) {
+      return res.status(404).json({ error: 'Usuário não encontrado.' });
+    }
+
+    const senhaConfere = await bcrypt.compare(senha, resultSenhaHash);
+    res.json({ isValid: senhaConfere });
   } catch (error) {
     console.error('Erro ao validar senha:', error);
     res.status(500).json({ error: 'Erro interno no servidor.' });
   }
 });
-
 
 // ENDPOINT PARA CADASTRAR USUÁRIOS
 
@@ -115,15 +121,18 @@ app.post('/usuarios', async (req, res) => {
 
     const result = await db_client.query(query, values);
 
-    res.status(201).json(result.rows[0]);
+    res.status(201).json({
+      id_usuario: result.rows[0].id_usuario,
+      nome: result.rows[0].nome,
+      email: result.rows[0].email,
+    });
   } catch (error) {
     console.error('Erro ao inserir usuário:', error);
-
     res.status(500).json({ error: 'Erro interno no servidor.' });
   }
 });
 
-//ENDPOINT PARA CADASTRAR DISPONIBILIDADE INICIAL
+// ENDPOINT PARA CADASTRAR DISPONIBILIDADE INICIAL
 
 app.post('/disponibilidade_inicial', async (req, res) => {
   try {
@@ -146,8 +155,7 @@ app.post('/disponibilidade_inicial', async (req, res) => {
   }
 });
 
-
-//ENDPOINT PARA CADASTRAR DÉBITOS
+// ENDPOINT PARA CADASTRAR DÉBITOS
 
 app.post('/debitos', async (req, res) => {
   try {
@@ -218,7 +226,6 @@ app.post('/notificacao-controle-saldo', async (req, res) => {
   }
 });
 
-
 // ENDPOINT CONFIGURAÇÃO DA NOTIFICAÇÃO DE AVISO RECEBIMENTO
 
 app.post('/notificacao-dia-recebimento', async (req, res) => {
@@ -242,8 +249,7 @@ app.post('/notificacao-dia-recebimento', async (req, res) => {
   }
 });
 
-
-//APP LISTEN
+// APP LISTEN
 
 app.listen(port, '0.0.0.0', () => {
   console.log(`Servidor rodando em http://localhost:${port}`);
