@@ -26,7 +26,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 1em; 
+  gap: 1em;
 }
 
 .title-text {
@@ -132,7 +132,7 @@ body {
   line-height: 1;
 }
 
-.check-btn {
+.delete-btn {
   background: none;
   border: none;
   cursor: pointer;
@@ -186,4 +186,105 @@ body {
 .default-button.cinza {
   background-color: #D3D3D3;
   color: #333;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  text-align: left;
+}
+
+.modal-content h2 {
+  font-family: Arial, sans-serif;
+  color: #6495ed;
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.modal-content label {
+  font-weight: bold;
+}
+
+.modal-content input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+.modal-botoes {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+.modal-botoes .default-button {
+  flex: 1;
+}
+.modal-botoes .default-button:first-child {
+  margin-right: 10px;
+}
+
+.add-debito-container {
+  margin-top: 15px;
+  text-align: right;
+}
+
+.add-debito-btn {
+  background-color: transparent;
+  color: #6495ed;
+  border: none;
+  font-size: 1em;
+  cursor: pointer;
+  font-weight: bold;
+  padding: 5px;
+  transition: color 0.2s;
+}
+
+.add-debito-btn:hover {
+  color: #3b62b1;
+}
+
+.small-modal {
+  max-width: 300px;
+  text-align: center;
+}
+
+.small-modal p {
+  margin-bottom: 20px;
+}
+
+.pago {
+  text-decoration: line-through;
+  color: gray;
+}
+
+.toggle-pagamento-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  padding: 0;
 }

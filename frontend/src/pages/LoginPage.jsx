@@ -8,25 +8,25 @@ function LoginPage() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [nome, setNome] = useState('');
-  const [emailLogin, setEmailLogin] = useState(true);
-  const [senhaLogin, setSenhaLogin] = useState(false);
-  const [registroNovo, setRegistroNovo] = useState(false);
+  const [etapaEmail, setEtapaEmail] = useState(true);
+  const [etapaSenha, setEtapaSenha] = useState(false);
+  const [etapaRegistro, setEtapaRegistro] = useState(false);
   const [confirmarSenha, setConfirmarSenha] = useState('');
-  const navigate = useNavigate();
+  const navegar = useNavigate();
 
-  const redirectToHome = (id_usuario) => {
+  const redirecionarParaHome = (id_usuario) => {
     localStorage.setItem('id_usuario', id_usuario);
     setTimeout(() => {
-      navigate('/');
+      navegar('/');
     }, 1500);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (emailLogin) {
+    if (etapaEmail) {
       try {
-        const response = await fetch('http://localhost:3000/check-email', {
+        const resposta = await fetch('http://localhost:3000/check-email', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -34,15 +34,15 @@ function LoginPage() {
           body: JSON.stringify({ email }),
         });
 
-        const data = await response.json();
+        const dados = await resposta.json();
 
-        if (data.isRegistered) {
-          setNome(data.nome);
-          setEmailLogin(false);
-          setSenhaLogin(true);
+        if (dados.isRegistered) {
+          setNome(dados.nome);
+          setEtapaEmail(false);
+          setEtapaSenha(true);
         } else {
-          setEmailLogin(false);
-          setRegistroNovo(true);
+          setEtapaEmail(false);
+          setEtapaRegistro(true);
         }
       } catch (error) {
         alert('Erro ao conectar com o servidor.');
@@ -50,9 +50,9 @@ function LoginPage() {
       }
     }
 
-    if (senhaLogin) {
+    if (etapaSenha) {
       try {
-        const response = await fetch('http://localhost:3000/check-password', {
+        const resposta = await fetch('http://localhost:3000/check-password', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -63,11 +63,11 @@ function LoginPage() {
           }),
         });
 
-        const data = await response.json();
+        const dados = await resposta.json();
 
-        if (data.isValid) {
+        if (dados.isValid) {
           toast.success(`Bem-vindo, ${nome}!`);
-          redirectToHome(data.id_usuario);
+          redirecionarParaHome(dados.id_usuario);
         } else {
           toast.error('Senha incorreta!');
         }
@@ -77,14 +77,14 @@ function LoginPage() {
       }
     }
 
-    if (registroNovo) {
+    if (etapaRegistro) {
       if (senha !== confirmarSenha) {
         toast.error('As senhas informadas estão diferentes.');
         return;
       }
 
       try {
-        const response = await fetch('http://localhost:3000/usuarios', {
+        const resposta = await fetch('http://localhost:3000/usuarios', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -96,13 +96,13 @@ function LoginPage() {
           }),
         });
 
-        const data = await response.json();
+        const dados = await resposta.json();
 
-        if (data?.id_usuario) {
+        if (dados?.id_usuario) {
           toast.success('Cadastro realizado com sucesso!');
-          redirectToHome(data.id_usuario);
+          redirecionarParaHome(dados.id_usuario);
         } else {
-          toast.error(data.message || 'Erro ao cadastrar.');
+          toast.error(dados.message || 'Erro ao cadastrar.');
         }
       } catch (error) {
         alert('Erro ao conectar com o servidor.');
@@ -113,86 +113,83 @@ function LoginPage() {
 
   return (
     <div className="container">
-      <div className="welcome">
-        <h1 className="title-text">Bem vindo(a)</h1>
-      </div>
-      <br />
       <div className="logo">
         <img src={logo} alt="Logo Pingou" />
       </div>
 
-      <form onSubmit={handleSubmit}>
-        <br />
-
-        {emailLogin && (
-          <>
-            <label htmlFor="email-input">Digite o seu e-mail:</label>
-            <br />
-            <input
-              type="email"
-              id="email-input"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </>
+      <div className="modal-content">
+        {etapaEmail && (
+          <h2 className="title-text-login">Bem-vindo(a)</h2>
+        )}
+        {etapaSenha && (
+          <h2 className="title-text-login">Olá, {nome}!</h2>
+        )}
+        {etapaRegistro && (
+          <h2 className="title-text-login">Primeira vez por aqui?</h2>
         )}
 
-        {senhaLogin && (
-          <>
-            <p>Olá, {nome}!</p>
-            <label htmlFor="senha-input">Digite sua senha:</label>
-            <br />
-            <input
-              type="password"
-              id="senha-input"
-              value={senha}
-              onChange={(e) => setSenha(e.target.value)}
-              required
-            />
-          </>
-        )}
+        <form onSubmit={handleSubmit}>
+          {etapaEmail && (
+            <>
+              <label htmlFor="email-input">Digite o seu e-mail:</label>
+              <input
+                type="email"
+                id="email-input"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </>
+          )}
 
-        {registroNovo && (
-          <>
-            <p><b>Primeira vez por aqui?</b></p>
+          {etapaSenha && (
+            <>
+              <label htmlFor="senha-input">Digite sua senha:</label>
+              <input
+                type="password"
+                id="senha-input"
+                value={senha}
+                onChange={(e) => setSenha(e.target.value)}
+                required
+              />
+            </>
+          )}
 
-            <label>Digite como gostaria de ser chamado</label>
-            <br />
-            <input
-              type="text"
-              value={nome}
-              onChange={(e) => setNome(e.target.value)}
-              required
-            />
-            <br /><br />
+          {etapaRegistro && (
+            <>
+              <label>Digite como gostaria de ser chamado</label>
+              <input
+                type="text"
+                value={nome}
+                onChange={(e) => setNome(e.target.value)}
+                required
+              />
 
-            <label>Digite sua senha</label>
-            <br />
-            <input
-              type="password"
-              value={senha}
-              onChange={(e) => setSenha(e.target.value)}
-              required
-            />
-            <br /><br />
+              <label>Digite sua senha</label>
+              <input
+                type="password"
+                value={senha}
+                onChange={(e) => setSenha(e.target.value)}
+                required
+              />
 
-            <label>Repita sua senha</label>
-            <br />
-            <input
-              type="password"
-              value={confirmarSenha}
-              onChange={(e) => setConfirmarSenha(e.target.value)}
-              required
-            />
-          </>
-        )}
+              <label>Repita sua senha</label>
+              <input
+                type="password"
+                value={confirmarSenha}
+                onChange={(e) => setConfirmarSenha(e.target.value)}
+                required
+              />
+            </>
+          )}
 
-        <br /><br />
-        <button type="submit" className="default-button">
-          {registroNovo ? 'Cadastrar' : 'Avançar'}
-        </button>
-      </form>
+          <div className="modal-botoes">
+            <button type="submit" className="default-button">
+              {etapaRegistro ? 'Cadastrar' : 'Avançar'}
+            </button>
+          </div>
+        </form>
+      </div>
       <ToastContainer position="bottom-center" autoClose={2000} />
     </div>
   );

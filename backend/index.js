@@ -115,6 +115,14 @@ app.post('/usuarios', async (req, res) => {
       return res.status(400).json({ error: 'Nome, email e senha são obrigatórios.' });
     }
 
+    // verifica se o e-mail já existe
+    const emailExistenteQuery = `SELECT id_usuario FROM usuarios WHERE email = $1;`;
+    const emailExistenteResult = await db_client.query(emailExistenteQuery, [email]);
+    if (emailExistenteResult.rows.length > 0) {
+      return res.status(409).json({ error: 'Este e-mail já está cadastrado.' });
+    }
+
+    // segue com o cadastro
     const senhaHash = await bcrypt.hash(senha, saltRounds);
 
     const query = `
@@ -165,7 +173,86 @@ app.post('/saldos_mensais', async (req, res) => {
   }
 });
 
-// ENDPOINT PARA OBTER SALDOS MENSAIS
+// ENDPOINT PARA ATUALIZAR SALDO DISPONÍVEL
+app.put('/saldos_mensais/disponivel', async (req, res) => {
+  try {
+    const { id_usuario, mes, ano, saldo_disponivel } = req.body;
+
+    if (!id_usuario || !mes || !ano || saldo_disponivel === undefined) {
+      return res.status(400).json({ error: 'id_usuario, mes, ano e saldo_disponivel são obrigatórios.' });
+    }
+
+    // verifica se o registro já existe para o mês/ano
+    const checkQuery = 'SELECT * FROM saldos_mensais WHERE id_usuario = $1 AND mes = $2 AND ano = $3';
+    const checkResult = await db_client.query(checkQuery, [id_usuario, mes, ano]);
+
+    if (checkResult.rows.length > 0) {
+      // Se existir, atualiza o saldo disponível
+      const updateQuery = `
+        UPDATE saldos_mensais
+        SET saldo_disponivel = $1
+        WHERE id_usuario = $2 AND mes = $3 AND ano = $4
+        RETURNING *;
+      `;
+      const updateResult = await db_client.query(updateQuery, [saldo_disponivel, id_usuario, mes, ano]);
+      res.status(200).json(updateResult.rows[0]);
+    } else {
+      // Se não existir, insere o saldo de despesas variáveis como "0"
+      const insertQuery = `
+        INSERT INTO saldos_mensais (id_usuario, saldo_disponivel, saldo_despesas_variaveis, mes, ano)
+        VALUES ($1, $2, $3, $4, $5)
+        RETURNING *;
+      `;
+      const insertResult = await db_client.query(insertQuery, [id_usuario, saldo_disponivel, 0, mes, ano]);
+      res.status(201).json(insertResult.rows[0]);
+    }
+  } catch (error) {
+    console.error('Erro ao atualizar saldo disponível:', error);
+    res.status(500).json({ error: 'Erro interno no servidor.' });
+  }
+});
+
+// ENDPOINT PARA ATUALIZAR SALDO DE DESPESAS VARIÁVEIS
+app.put('/saldos_mensais/variaveis', async (req, res) => {
+  try {
+    const { id_usuario, mes, ano, saldo_despesas_variaveis } = req.body;
+
+    if (!id_usuario || !mes || !ano || saldo_despesas_variaveis === undefined) {
+      return res.status(400).json({ error: 'id_usuario, mes, ano e saldo_despesas_variaveis são obrigatórios.' });
+    }
+
+    // VERIFICA SE EXISTE REGISTRO PARA O MÊS/ANO
+    const checkQuery = 'SELECT * FROM saldos_mensais WHERE id_usuario = $1 AND mes = $2 AND ano = $3';
+    const checkResult = await db_client.query(checkQuery, [id_usuario, mes, ano]);
+
+    if (checkResult.rows.length > 0) {
+      // SE EXISTIR, MOSTRA O SALDO
+      const updateQuery = `
+        UPDATE saldos_mensais
+        SET saldo_despesas_variaveis = $1
+        WHERE id_usuario = $2 AND mes = $3 AND ano = $4
+        RETURNING *;
+      `;
+      const updateResult = await db_client.query(updateQuery, [saldo_despesas_variaveis, id_usuario, mes, ano]);
+      res.status(200).json(updateResult.rows[0]);
+    } else {
+      // SE NÃO EXISTIR, MOSTRA ZERADO
+      const insertQuery = `
+        INSERT INTO saldos_mensais (id_usuario, saldo_disponivel, saldo_despesas_variaveis, mes, ano)
+        VALUES ($1, $2, $3, $4, $5)
+        RETURNING *;
+      `;
+      const insertResult = await db_client.query(insertQuery, [id_usuario, 0, saldo_despesas_variaveis, mes, ano]);
+      res.status(201).json(insertResult.rows[0]);
+    }
+  } catch (error) {
+    console.error('Erro ao atualizar saldo de despesas variáveis:', error);
+    res.status(500).json({ error: 'Erro interno no servidor.' });
+  }
+});
+
+
+// ENDPOINT PARA OBTER SALDOS MENSAIS DO MES/ANO
 app.get('/saldos_mensais', async (req, res) => {
   try {
     const { id_usuario, mes, ano } = req.query;
@@ -195,18 +282,17 @@ app.get('/saldos_mensais', async (req, res) => {
 });
 
 // ENDPOINT PARA CADASTRAR DÉBITOS
-
 app.post('/debitos', async (req, res) => {
   try {
-    const { id_usuario, desc_debito, valor, vencimento, repeticoes } = req.body;
+    const { id_usuario, desc_debito, valor, vencimento } = req.body;
 
     const query = `
-      INSERT INTO debitos (id_usuario, desc_debito, valor, vencimento, repeticoes)
+      INSERT INTO debitos (id_usuario, desc_debito, valor, vencimento, status_pagamento)
       VALUES ($1, $2, $3, $4, $5)
       RETURNING *;
     `;
 
-    const values = [id_usuario, desc_debito, valor, vencimento, repeticoes];
+    const values = [id_usuario, desc_debito, valor, vencimento, false];
 
     const result = await db_client.query(query, values);
 
@@ -217,7 +303,7 @@ app.post('/debitos', async (req, res) => {
   }
 });
 
-// ENDPOINT PARA OBTER DÉBITOS
+// ENDPOINT PARA OBTER DÉBITO DO MES/ANO
 app.get('/obter_debitos', async (req, res) => {
   try {
     const { id_usuario, mes, ano } = req.query;
@@ -227,7 +313,7 @@ app.get('/obter_debitos', async (req, res) => {
     }
 
     const query = `
-      SELECT id_debito, desc_debito, valor, vencimento, repeticoes
+      SELECT id_debito, desc_debito, valor, vencimento, status_pagamento
       FROM debitos
       WHERE id_usuario = $1
       AND EXTRACT(MONTH FROM vencimento) = $2
@@ -241,6 +327,56 @@ app.get('/obter_debitos', async (req, res) => {
 
   } catch (error) {
     console.error('Erro ao buscar débitos:', error);
+    res.status(500).json({ error: 'Erro interno no servidor.' });
+  }
+});
+
+// ENDPOINT PARA ATUALIZAR DÉBITO
+app.put('/debitos/:id_debito', async (req, res) => {
+  try {
+    const { id_debito } = req.params;
+    const { desc_debito, valor, vencimento, status_pagamento } = req.body;
+
+    const query = `
+      UPDATE debitos
+      SET desc_debito = $1, valor = $2, vencimento = $3, status_pagamento = $4
+      WHERE id_debito = $5
+      RETURNING *;
+    `;
+
+    const values = [desc_debito, valor, vencimento, status_pagamento, id_debito];
+
+    const result = await db_client.query(query, values);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Débito não encontrado.' });
+    }
+
+    res.status(200).json(result.rows[0]);
+  } catch (error) {
+    console.error('Erro ao atualizar débito:', error);
+    res.status(500).json({ error: 'Erro interno no servidor.' });
+  }
+});
+
+// ENDPOINT PARA EXCLUIR DÉBITO
+app.delete('/debitos/:id_debito', async (req, res) => {
+  try {
+    const { id_debito } = req.params;
+
+    const query = `
+      DELETE FROM debitos WHERE id_debito = $1;
+    `;
+
+    const result = await db_client.query(query, [id_debito]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: 'Débito não encontrado.' });
+    }
+
+    res.status(200).json({ message: 'Débito excluído com sucesso.' });
+  } catch (error) {
+    console.error('Erro ao excluir débito:', error);
     res.status(500).json({ error: 'Erro interno no servidor.' });
   }
 });

@@ -1,6 +1,6 @@
 -- DOCUMENTO DESTINADO A SALVAR OS COMANDOS UTILIZADOS NA PREPARAÇÃO DAS TABELAS DO BANCO DE DADOS
 
--- comando pra deletar todas tabelas: drop table debitos, notificacoes_controle_saldo, notificacoes_dia_recebimento, reservas, test_connection, usuarios cascade 
+-- comando pra deletar todas tabelas: drop table debitos, notificacoes_controle_saldo, notificacoes_dia_recebimento, reservas, test_connection, usuarios cascade
 
 -- Tabela test_connection
 
@@ -36,7 +36,7 @@ CREATE TABLE debitos (
     desc_debito VARCHAR(200),
     valor NUMERIC(10, 2) NOT NULL,
     vencimento DATE NOT NULL,
-    repeticoes INT CHECK (repeticoes >= 0) DEFAULT 0
+    status_pagamento BOOLEAN DEFAULT FALSE
 );
 
 -- Reservas
