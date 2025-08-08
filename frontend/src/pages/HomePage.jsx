@@ -568,6 +568,7 @@ function HomePage() {
       )}
 
       <div className="resumo">
+        <h2 className="left-align">Resumo</h2>
         <p>
           Total de Débitos
           <br />
@@ -575,15 +576,19 @@ function HomePage() {
           <span className="valor vermelho">R$ {formatarMoeda(totalDebitos)}</span>
         </p>
         <br />
+        <br />
         <p>
-          Saldo para despesas variáveis <span className="percentual laranja">{percentualDespesasVariaveis.toFixed(0)}%</span>
+          Saldo para despesas variáveis 
           <br />
+          <span className="percentual laranja">{percentualDespesasVariaveis.toFixed(0)}%</span>
           <span className="valor laranja"> R$ {formatarMoeda(saldoDespesasVariaveis)} <button className="edit-btn" onClick={() => abrirModalSaldo('variaveis', saldoDespesasVariaveis)}>✏️</button> </span>
         </p>
         <br />
+        <br />
         <p>
-          Saldo não comprometido <span className="percentual verde">{percentualNaoComprometido.toFixed(0)}%</span>
+          Saldo não comprometido 
           <br />
+          <span className="percentual verde">{percentualNaoComprometido.toFixed(0)}%</span>
           <span className="valor verde">R$ {formatarMoeda(saldoNaoComprometido)}</span>
         </p>
         <br />
