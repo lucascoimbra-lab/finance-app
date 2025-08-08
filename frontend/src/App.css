@@ -78,6 +78,20 @@ body {
   transition: background-color 0.3s ease;
 }
 
+.default-button-mini {
+  font-family: Arial, sans-serif;
+  font-size: 1em;
+  color: white;
+  text-align: center;
+  background-color: #0e2f6d;
+  border-radius: 10px;
+  padding: 0.2em 0.5em;
+  display: inline-block;
+  text-decoration: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease;
+}
+
 .saldo-container {
   display: flex;
   justify-content: space-between;

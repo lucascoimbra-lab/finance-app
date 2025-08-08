@@ -526,12 +526,12 @@ function HomePage() {
           </tbody>
         </table>
         <div className="add-debito-container">
-          <button className="add-debito-btn" onClick={abrirModalDebito}>
+          <button className="default-button-mini" onClick={abrirModalDebito}>
             + Adicionar uma nova conta
           </button>
         </div>
         <div className="copy-debitos-e-saldos-container">
-          <button className="copy-debitos-e-saldos-btn" onClick={copiarDebitosESaldos}>
+          <button className="default-button-mini" onClick={copiarDebitosESaldos}>
             + Copiar todas as contas e saldos do mês anterior
           </button>
         </div>
