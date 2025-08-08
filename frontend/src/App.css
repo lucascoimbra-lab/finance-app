@@ -22,6 +22,10 @@ body {
   margin: 0 auto;
 }
 
+.left-align {
+  text-align: left;
+}
+
 .month-selector {
   display: flex;
   justify-content: center;
@@ -217,7 +221,7 @@ body {
 .modal-content h2 {
   font-family: Arial, sans-serif;
   color: #6495ed;
-  text-align: center;
+  text-align: left;
   margin-bottom: 15px;
 }
 
@@ -253,6 +257,22 @@ body {
 }
 
 .add-debito-btn {
+  background-color: transparent;
+  color: #6495ed;
+  border: none;
+  font-size: 1em;
+  cursor: pointer;
+  font-weight: bold;
+  padding: 5px;
+  transition: color 0.2s;
+}
+
+.copy-debitos-e-saldos-container {
+  margin-top: 15px;
+  text-align: right;
+}
+
+.copy-debitos-e-saldos-btn {
   background-color: transparent;
   color: #6495ed;
   border: none;

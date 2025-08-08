@@ -16,24 +16,22 @@ const CadastroDebitoModal = ({ onClose, onSave, mes, ano, debitoParaEditar }) =>
   const cadastrarDebito = async (novoDebito) => {
     const url = 'http://localhost:3000/debitos';
     const metodo = 'POST';
-    const mensagemSucesso = 'Débito cadastrado com sucesso!';
     const mensagemErro = 'Erro ao cadastrar débito.';
 
-    return await fazerRequisicao(url, metodo, novoDebito, mensagemSucesso, mensagemErro);
+    return await fazerRequisicao(url, metodo, novoDebito, mensagemErro);
   };
 
   // EDIÇÃO
   const editarDebito = async (novoDebito) => {
     const url = `http://localhost:3000/debitos/${debitoParaEditar.id_debito}`;
     const metodo = 'PUT';
-    const mensagemSucesso = 'Débito atualizado com sucesso!';
     const mensagemErro = 'Erro ao atualizar débito.';
 
-    return await fazerRequisicao(url, metodo, novoDebito, mensagemSucesso, mensagemErro);
+    return await fazerRequisicao(url, metodo, novoDebito, mensagemErro);
   };
 
   // REQUISIÇÃO GENÉRICA (CADASTRO OU EDIÇÃO)
-  const fazerRequisicao = async (url, metodo, novoDebito, mensagemSucesso, mensagemErro) => {
+  const fazerRequisicao = async (url, metodo, novoDebito, mensagemErro) => {
     try {
       const response = await fetch(url, {
         method: metodo,
@@ -47,8 +45,7 @@ const CadastroDebitoModal = ({ onClose, onSave, mes, ano, debitoParaEditar }) =>
         throw new Error(mensagemErro);
       }
 
-      toast.success(mensagemSucesso);
-      onSave(); 
+      onSave();
       onClose();
     } catch (error) {
       console.error(mensagemErro, error);
@@ -158,7 +155,6 @@ const EdicaoSaldoModal = ({ onClose, onSave, mes, ano, tipoSaldo, valorSaldoInic
         throw new Error('Erro ao atualizar saldo.');
       }
 
-      toast.success('Saldo atualizado com sucesso!');
       onSave();
       onClose();
     } catch (error) {
@@ -332,7 +328,6 @@ function HomePage() {
         throw new Error('Erro ao excluir débito.');
       }
 
-      toast.success('Débito excluído com sucesso!');
       buscarDebitos(idUsuario, dataAtual.getMonth() + 1, dataAtual.getFullYear());
     } catch (error) {
       console.error('Erro ao excluir débito:', error);
@@ -360,7 +355,6 @@ function HomePage() {
         throw new Error('Erro ao atualizar status do débito.');
       }
 
-      toast.success('Status do débito atualizado com sucesso!');
       buscarDebitos(idUsuario, dataAtual.getMonth() + 1, dataAtual.getFullYear());
     } catch (error) {
       console.error('Erro ao atualizar status do débito:', error);
@@ -415,6 +409,35 @@ function HomePage() {
     setDebitoParaEditar(null);
   };
 
+  // FUNÇÃO PARA COPIAR DÉBITOS E SALDOS DO MES ANTERIOR
+
+  const copiarDebitosESaldos = async () => {
+    try {
+      const response = await fetch('http://localhost:3000/copiar-debitos-e-saldos', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id_usuario: idUsuario,
+          data_atual: dataAtual,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Erro ao copiar débitos e saldos.');
+      }
+
+      // RECARREGA INFOS NA TELA
+      buscarDebitos(idUsuario, dataAtual.getMonth() + 1, dataAtual.getFullYear());
+      buscarSaldos(idUsuario, dataAtual.getMonth() + 1, dataAtual.getFullYear());
+
+    } catch (error) {
+      console.error('Erro ao copiar débitos e saldos:', error);
+      toast.error(error.message);
+    }
+  };
+
   // VARIÁVEIS PARA INFORMAÇÕES DO RESUMO GERAL E PERCENTUAIS
   const saldoNaoComprometido = saldoDisponivel - totalDebitos - saldoDespesasVariaveis;
   const totalGeral = saldoDisponivel;
@@ -435,7 +458,6 @@ function HomePage() {
         <h1 className="title-text">{`${meses[dataAtual.getMonth()]} ${dataAtual.getFullYear()}`}</h1>
         <button className="month-nav-btn" onClick={avancarMes}>→</button>
       </div>
-
       <div className="saldo-container">
         <div>
           <h2>Saldo disponível</h2>
@@ -447,7 +469,7 @@ function HomePage() {
       </div>
 
       <div className="checklist">
-        <h3>Checklist de Pagamentos e Transferências</h3>
+        <h2 className="left-align">Checklist de Contas</h2>
         <table>
           <thead>
             <tr>
@@ -490,10 +512,17 @@ function HomePage() {
         </table>
         <div className="add-debito-container">
           <button className="add-debito-btn" onClick={abrirModalDebito}>
-            + Adicionar novo débito
+            + Adicionar uma nova conta
+          </button>
+        </div>
+        <div className="copy-debitos-e-saldos-container">
+          <button className="copy-debitos-e-saldos-btn" onClick={copiarDebitosESaldos}>
+            + Copiar todas as contas e saldos do mês anterior
           </button>
         </div>
       </div>
+
+
 
       {modalDebitoAberto && (
         <CadastroDebitoModal
@@ -549,6 +578,7 @@ function HomePage() {
         <button className="default-button">Planejamento</button>
         <button className="default-button cinza">Reservas</button>
       </div>
+      <ToastContainer position="bottom-center" autoClose={2000} />
     </div>
   );
 }

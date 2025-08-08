@@ -381,6 +381,101 @@ app.delete('/debitos/:id_debito', async (req, res) => {
   }
 });
 
+// ENDPOINT PARA CLONAR DÉBITOS E SALDOS DO MÊS ANTERIOR
+
+app.post('/copiar-debitos-e-saldos', async (req, res) => {
+  try {
+    const { id_usuario, data_atual } = req.body;
+
+    if (!id_usuario || !data_atual) {
+      return res.status(400).json({ error: 'id_usuario e data_atual (AAAA-MM-DD) são obrigatórios.' });
+    }
+
+    // VARIÁVEIS MES ATUAL
+    const dataAtual = new Date(data_atual);
+    const mes_atual = dataAtual.getMonth() + 1;
+    const ano_atual = dataAtual.getFullYear();
+
+    // VARIÁVEIS MES ANTERIOR
+    const dataAnterior = new Date(dataAtual);
+    dataAnterior.setMonth(dataAnterior.getMonth() - 1);
+    const mes_anterior = dataAnterior.getMonth() + 1;
+    const ano_anterior = dataAnterior.getFullYear();
+
+    // COLETA DÉBITOS MÊS ANTERIOR
+    const queryDebitosAnteriores = `
+      SELECT desc_debito, valor, vencimento
+      FROM debitos
+      WHERE id_usuario = $1
+      AND EXTRACT(MONTH FROM vencimento) = $2
+      AND EXTRACT(YEAR FROM vencimento) = $3;
+    `;
+    const resultDebitos = await db_client.query(queryDebitosAnteriores, [id_usuario, mes_anterior, ano_anterior]);
+
+    if (resultDebitos.rows.length > 0) {
+      const novosDebitos = resultDebitos.rows.map(debito => {
+        const diaVencimento = new Date(debito.vencimento).getDate();
+        const novaDataVencimento = new Date(ano_atual, mes_atual - 1, diaVencimento);
+        const ultimoDiaMesAtual = new Date(ano_atual, mes_atual, 0).getDate();
+
+        // AJUSTE PARA MÊSES COM MAIS DIAS DO QUE OUTROS
+        if (diaVencimento > ultimoDiaMesAtual) {
+          novaDataVencimento.setDate(ultimoDiaMesAtual);
+        }
+
+        return `(${id_usuario}, '${debito.desc_debito.replace(/'/g, "''")}', ${debito.valor}, '${novaDataVencimento.toISOString()}', FALSE)`;
+      });
+
+      // INSERT DÉBITOS MÊS ATUAL
+      const queryInsercaoDebitos = `
+        INSERT INTO debitos (id_usuario, desc_debito, valor, vencimento, status_pagamento)
+        VALUES ${novosDebitos.join(',')};
+      `;
+      await db_client.query(queryInsercaoDebitos);
+    }
+    
+    // COLETA SALDOS MÊS ANTERIOR
+    const querySaldoAnterior = `
+      SELECT saldo_disponivel, saldo_despesas_variaveis
+      FROM saldos_mensais
+      WHERE id_usuario = $1
+      AND mes = $2
+      AND ano = $3;
+    `;
+    const resultSaldo = await db_client.query(querySaldoAnterior, [id_usuario, mes_anterior, ano_anterior]);
+    
+    if (resultSaldo.rows.length > 0) {
+      const { saldo_disponivel, saldo_despesas_variaveis } = resultSaldo.rows[0];
+
+      const checkSaldoAtualQuery = 'SELECT * FROM saldos_mensais WHERE id_usuario = $1 AND mes = $2 AND ano = $3';
+      const checkSaldoAtualResult = await db_client.query(checkSaldoAtualQuery, [id_usuario, mes_atual, ano_atual]);
+      
+      // ATUALIZA SALDO MÊS ATUAL (CASO EXISTA)
+      if (checkSaldoAtualResult.rows.length > 0) {
+        const updateSaldoQuery = `
+          UPDATE saldos_mensais
+          SET saldo_disponivel = $1, saldo_despesas_variaveis = $2
+          WHERE id_usuario = $3 AND mes = $4 AND ano = $5;
+        `;
+        await db_client.query(updateSaldoQuery, [saldo_disponivel, saldo_despesas_variaveis, id_usuario, mes_atual, ano_atual]);
+      } else {
+        // INSERT SALDO MÊS ATUAL (CASO NÃO EXISTA)
+        const insertSaldoQuery = `
+          INSERT INTO saldos_mensais (id_usuario, saldo_disponivel, saldo_despesas_variaveis, mes, ano)
+          VALUES ($1, $2, $3, $4, $5);
+        `;
+        await db_client.query(insertSaldoQuery, [id_usuario, saldo_disponivel, saldo_despesas_variaveis, mes_atual, ano_atual]);
+      }
+    }
+    
+    res.status(201).json({ message: `Débitos e saldos do mês copiados com sucesso para o mês.` });
+
+  } catch (error) {
+    console.error('Erro ao copiar débitos e saldos:', error);
+    res.status(500).json({ error: 'Erro interno no servidor.' });
+  }
+});
+
 // ENDPOINT PARA CADASTRAR RESERVAS
 
 app.post('/reservas', async (req, res) => {
