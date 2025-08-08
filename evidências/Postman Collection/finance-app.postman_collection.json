@@ -522,7 +522,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"id_usuario\": 1,\r\n  \"desc_debito\": \"Conta de luz\",\r\n  \"valor\": 150.75,\r\n  \"vencimento\": \"2025-08-10\",\r\n  \"repeticoes\": 2\r\n}",
+					"raw": "{\r\n  \"id_usuario\": 2,\r\n  \"desc_debito\": \"Conta de luz\",\r\n  \"valor\": 150.75,\r\n  \"vencimento\": \"2025-08-10\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -551,7 +551,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"id_usuario\": 4,\r\n  \"mes\": 8,\r\n  \"ano\": 2025,\r\n  \"saldo_disponivel\": 12400\r\n}",
+					"raw": "{\r\n  \"desc_debito\": \"Assinatura NetFlix\",\r\n  \"valor\": 99,\r\n  \"vencimento\": \"2025-08-10\",\r\n  \"status_pagamento\": true\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -559,15 +559,15 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:3000/saldos_mensais/disponivel",
+					"raw": "http://localhost:3000/debitos/140",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "3000",
 					"path": [
-						"saldos_mensais",
-						"disponivel"
+						"debitos",
+						"140"
 					]
 				}
 			},
@@ -588,6 +588,34 @@
 					"path": [
 						"debitos",
 						"140"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "copiar-debitos-e-saldos",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"id_usuario\": 4,\r\n  \"data_atual\": \"2025-11-07\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/copiar-debitos-e-saldos",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"copiar-debitos-e-saldos"
 					]
 				}
 			},
@@ -719,6 +747,65 @@
 					]
 				},
 				"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+			},
+			"response": []
+		},
+		{
+			"name": "railway.app/test_connection",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://finance-app-production-6832.up.railway.app/test_connection",
+					"protocol": "https",
+					"host": [
+						"finance-app-production-6832",
+						"up",
+						"railway",
+						"app"
+					],
+					"path": [
+						"test_connection"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "backend no railway.app/",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://finance-app-production-6832.up.railway.app/",
+					"protocol": "https",
+					"host": [
+						"finance-app-production-6832",
+						"up",
+						"railway",
+						"app"
+					],
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "frontend no vercel.app",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://finance-app-one-eta.vercel.app",
+					"protocol": "https",
+					"host": [
+						"finance-app-one-eta",
+						"vercel",
+						"app"
+					]
+				}
 			},
 			"response": []
 		}
