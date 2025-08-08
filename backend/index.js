@@ -18,12 +18,13 @@ app.use(cors());
 // CONFIGURAÇÕES DEPENDÊNCIA BANCO DE DADOS - POSTGRES (PG)
 
 const db_client = new Client({
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
-  database: process.env.DB_DATABASE,
+  user: process.env.PGUSER,
+  password: process.env.PGPASSWORD,
+  host: process.env.PGHOST,
+  port: process.env.PGPORT,
+  database: process.env.PGDATABASE,
 });
+
 
 await db_client.connect();
 
