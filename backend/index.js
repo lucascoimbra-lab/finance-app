@@ -10,7 +10,6 @@ const API_URL = process.env.API_URL
 
 const saltRounds = 10;
 const app = express();
-const port = 3000;
 
 app.use(express.json());
 app.use(cors());
@@ -555,6 +554,6 @@ app.post('/notificacao-dia-recebimento', async (req, res) => {
 
 // APP LISTEN
 
-app.listen(port, '0.0.0.0', () => {
+app.listen(process.env.PGPORT, '0.0.0.0', () => {
   console.log(`Servidor rodando em ${ API_URL }`);
 });
