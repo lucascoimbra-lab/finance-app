@@ -478,7 +478,7 @@ function HomePage() {
               <th>Valor</th>
               <th></th>
               <th></th>
-              <th>Pago?</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -493,15 +493,30 @@ function HomePage() {
                   <td className={debito.status_pagamento ? 'pago' : ''}>{new Date(debito.vencimento).getUTCDate()}</td>
                   <td className={debito.status_pagamento ? 'pago' : ''}>R$ {formatarMoeda(parseFloat(debito.valor))}</td>
                   <td>
-                    <button className="edit-btn" onClick={() => editarDebito(debito)} disabled={estaExcluindo || debito.status_pagamento}>✏️</button>
+                    <button
+                      className="edit-btn"
+                      onClick={() => editarDebito(debito)}
+                      disabled={estaExcluindo || debito.status_pagamento}
+                      title="Editar item"
+                    >
+                      ✏️
+                    </button>
                   </td>
                   <td>
-                    <button className="delete-btn" onClick={() => abrirModalConfirmacao(debito.id_debito)} disabled={estaExcluindo || debito.status_pagamento}>
+                    <button
+                      className="delete-btn"
+                      onClick={() => abrirModalConfirmacao(debito.id_debito)}
+                      disabled={estaExcluindo || debito.status_pagamento}
+                      title="Excluir item"
+                    >
                       🗑️
                     </button>
                   </td>
                   <td>
-                    <button className="toggle-pagamento-btn" onClick={() => statusPagamento(debito)}>
+                    <button className="toggle-pagamento-btn"
+                      onClick={() => statusPagamento(debito)}
+                      title="Marcar/Desmarcar item como pago" 
+                      >
                       {debito.status_pagamento ? '✅' : '⬜'}
                     </button>
                   </td>
