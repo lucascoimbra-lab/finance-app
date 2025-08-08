@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 function VerificarConexao() {
   const [contador, setContador] = useState(null);
 
   useEffect(() => {
-    fetch('http://localhost:3000/test_connection')
+    fetch(`${ API_URL }/test_connection`)
       .then(res => res.json())
       .then(data => setContador(data.counter));
   }, []);

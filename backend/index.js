@@ -3,6 +3,11 @@ import express from 'express';
 import cors from 'cors';
 import bcrypt from 'bcrypt';
 
+import dotenv from 'dotenv';
+dotenv.config();
+
+const API_URL = process.env.API_URL
+
 const saltRounds = 10;
 const app = express();
 const port = 3000;
@@ -13,11 +18,11 @@ app.use(cors());
 // CONFIGURAÇÕES DEPENDÊNCIA BANCO DE DADOS - POSTGRES (PG)
 
 const db_client = new Client({
-  user: 'postgres',
-  password: 'Postgress@tcc2025',
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
   host: process.env.DB_HOST,
-  port: 5432,
-  database: 'financeapp',
+  port: process.env.DB_PORT,
+  database: process.env.DB_DATABASE,
 });
 
 await db_client.connect();
@@ -550,5 +555,5 @@ app.post('/notificacao-dia-recebimento', async (req, res) => {
 // APP LISTEN
 
 app.listen(port, '0.0.0.0', () => {
-  console.log(`Servidor rodando em http://localhost:${port}`);
+  console.log(`Servidor rodando em ${ API_URL }`);
 });

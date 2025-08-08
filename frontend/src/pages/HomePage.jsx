@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 
 // MODAL DE CADASTRO DE DEBITOS
 
@@ -14,7 +16,7 @@ const CadastroDebitoModal = ({ onClose, onSave, mes, ano, debitoParaEditar }) =>
 
   // CADASTRO
   const cadastrarDebito = async (novoDebito) => {
-    const url = 'http://localhost:3000/debitos';
+    const url = `${ API_URL }/debitos`;
     const metodo = 'POST';
     const mensagemErro = 'Erro ao cadastrar débito.';
 
@@ -23,7 +25,7 @@ const CadastroDebitoModal = ({ onClose, onSave, mes, ano, debitoParaEditar }) =>
 
   // EDIÇÃO
   const editarDebito = async (novoDebito) => {
-    const url = `http://localhost:3000/debitos/${debitoParaEditar.id_debito}`;
+    const url = `${ API_URL }/debitos/${debitoParaEditar.id_debito}`;
     const metodo = 'PUT';
     const mensagemErro = 'Erro ao atualizar débito.';
 
@@ -135,10 +137,10 @@ const EdicaoSaldoModal = ({ onClose, onSave, mes, ano, tipoSaldo, valorSaldoInic
     };
 
     if (tipoSaldo === 'disponivel') {
-      endpoint = 'http://localhost:3000/saldos_mensais/disponivel';
+      endpoint = `${ API_URL }/saldos_mensais/disponivel`;
       dados.saldo_disponivel = parseFloat(novoValor);
     } else if (tipoSaldo === 'variaveis') {
-      endpoint = 'http://localhost:3000/saldos_mensais/variaveis';
+      endpoint = `${ API_URL }/saldos_mensais/variaveis`;
       dados.saldo_despesas_variaveis = parseFloat(novoValor);
     }
 
@@ -247,7 +249,7 @@ function HomePage() {
   // FUNÇÃO PARA CARREGAR O SALDO NA TELA DO MES SELECIONADO. SE NÃO TIVER, CONSIDERA COMO 0.
   const buscarSaldos = async (idUser, mes, ano) => {
     try {
-      const resposta = await fetch(`http://localhost:3000/saldos_mensais?id_usuario=${idUser}&mes=${mes}&ano=${ano}`);
+      const resposta = await fetch(`${ API_URL }/saldos_mensais?id_usuario=${idUser}&mes=${mes}&ano=${ano}`);
 
       if (!resposta.ok) {
         if (resposta.status === 404) {
@@ -273,7 +275,7 @@ function HomePage() {
   // FUNÇÃO QUE CARREGA OS DÉBITOS DO MÊS/ANO NA TELA
   const buscarDebitos = async (idUser, mes, ano) => {
     try {
-      const resposta = await fetch(`http://localhost:3000/obter_debitos?id_usuario=${idUser}&mes=${mes}&ano=${ano}`);
+      const resposta = await fetch(`${ API_URL }/obter_debitos?id_usuario=${idUser}&mes=${mes}&ano=${ano}`);
 
       if (!resposta.ok) {
         throw new Error('Erro ao carregar os débitos');
@@ -320,7 +322,7 @@ function HomePage() {
     fecharModalConfirmacao();
 
     try {
-      const response = await fetch(`http://localhost:3000/debitos/${idDebitoParaExcluir}`, {
+      const response = await fetch(`${ API_URL }/debitos/${idDebitoParaExcluir}`, {
         method: 'DELETE',
       });
 
@@ -343,7 +345,7 @@ function HomePage() {
   const statusPagamento = async (debito) => {
     const novoStatus = !debito.status_pagamento;
     try {
-      const response = await fetch(`http://localhost:3000/debitos/${debito.id_debito}`, {
+      const response = await fetch(`${ API_URL }/debitos/${debito.id_debito}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -413,7 +415,7 @@ function HomePage() {
 
   const copiarDebitosESaldos = async () => {
     try {
-      const response = await fetch('http://localhost:3000/copiar-debitos-e-saldos', {
+      const response = await fetch(`${ API_URL }/copiar-debitos-e-saldos`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

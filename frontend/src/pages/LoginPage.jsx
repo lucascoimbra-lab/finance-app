@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 function LoginPage() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
@@ -13,6 +15,7 @@ function LoginPage() {
   const [etapaRegistro, setEtapaRegistro] = useState(false);
   const [confirmarSenha, setConfirmarSenha] = useState('');
   const navegar = useNavigate();
+  
 
   const redirecionarParaHome = (id_usuario) => {
     localStorage.setItem('id_usuario', id_usuario);
@@ -26,7 +29,8 @@ function LoginPage() {
 
     if (etapaEmail) {
       try {
-        const resposta = await fetch('http://localhost:3000/check-email', {
+        console.log(API_URL)
+        const resposta = await fetch(`${ API_URL }/check-email`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -52,7 +56,7 @@ function LoginPage() {
 
     if (etapaSenha) {
       try {
-        const resposta = await fetch('http://localhost:3000/check-password', {
+        const resposta = await fetch(`${ API_URL }/check-password`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -83,7 +87,7 @@ function LoginPage() {
       }
 
       try {
-        const resposta = await fetch('http://localhost:3000/usuarios', {
+        const resposta = await fetch(`${ API_URL }/usuarios`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
