@@ -6,15 +6,15 @@ services:
     volumes:
       - ./backend:/app
       - /app/node_modules
-    command: npm dev
+    command: npm start
     depends_on:
       - db
     environment:
-      - DB_HOST=db
-      - DB_PORT=5432
-      - DB_USER=postgres
-      - DB_PASSWORD=${POSTGRES_PASSWORD}
-      - DB_NAME=financeapp
+      - PGHOST=db
+      - PGPORT=5432
+      - PGUSER=postgres
+      - PGPASSWORD=${POSTGRES_PASSWORD}
+      - PGDATABASE=financeapp
 
   frontend:
     build: ./frontend

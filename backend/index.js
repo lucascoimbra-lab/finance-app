@@ -24,8 +24,7 @@ const db_client = new Client({
   database: process.env.PGDATABASE,
 });
 
-
-await db_client.connect();
+db_client.connect();
 
 // ENDPOINT PADRÃO DO FRAMEWORK
 
@@ -554,6 +553,7 @@ app.post('/notificacao-dia-recebimento', async (req, res) => {
 
 // APP LISTEN
 
-app.listen(process.env.PGPORT, '0.0.0.0', () => {
-  console.log(`Servidor rodando em ${ API_URL }`);
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Servidor rodando em ${process.env.API_URL}`);
 });
