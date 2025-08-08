@@ -66,7 +66,6 @@ function LoginPage() {
         const dados = await resposta.json();
 
         if (dados.isValid) {
-          toast.success(`Bem-vindo, ${nome}!`);
           redirecionarParaHome(dados.id_usuario);
         } else {
           toast.error('Senha incorreta!');
@@ -119,7 +118,7 @@ function LoginPage() {
 
       <div className="modal-content">
         {etapaEmail && (
-          <h2 className="title-text-login">Bem-vindo(a)</h2>
+          <h2 className="title-text-login">Pingou na conta? <br /> É hora de organizar!</h2>
         )}
         {etapaSenha && (
           <h2 className="title-text-login">Olá, {nome}!</h2>
