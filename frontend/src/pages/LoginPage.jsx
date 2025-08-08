@@ -118,7 +118,7 @@ function LoginPage() {
 
       <div className="modal-content">
         {etapaEmail && (
-          <h2 className="title-text-login">Pingou na conta? <br /> É hora de organizar!</h2>
+          <h2 className="title-text-login">Pingou na conta? <br /> Reserve antes de evaporar!</h2>
         )}
         {etapaSenha && (
           <h2 className="title-text-login">Olá, {nome}!</h2>
