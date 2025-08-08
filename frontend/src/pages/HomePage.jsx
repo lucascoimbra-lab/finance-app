@@ -568,9 +568,8 @@ function HomePage() {
       )}
 
       <div className="resumo">
-        <h2 className="left-align">Resumo</h2>
         <p>
-          Total de Débitos
+          Total em Contas
           <br />
           <span className="percentual vermelho">{percentualDebitos.toFixed(0)}%</span>
           <span className="valor vermelho">R$ {formatarMoeda(totalDebitos)}</span>
