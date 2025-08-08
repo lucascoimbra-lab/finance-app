@@ -81,9 +81,10 @@ body {
 .default-button-mini {
   font-family: Arial, sans-serif;
   font-size: 1em;
-  color: white;
   text-align: center;
-  background-color: #0e2f6d;
+  font-weight: bold;
+  background-color: #D3D3D3;
+  color: #333;
   border-radius: 10px;
   padding: 0.2em 0.5em;
   display: inline-block;
