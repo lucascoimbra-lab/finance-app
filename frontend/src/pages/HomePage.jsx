@@ -570,7 +570,7 @@ function HomePage() {
       )}
 
       <div className="resumo">
-        <p>
+        <p className="always-black">
           Total em Contas
           <br />
           <span className="percentual vermelho">{percentualDebitos.toFixed(0)}%</span>
@@ -578,7 +578,7 @@ function HomePage() {
         </p>
         <br />
         <br />
-        <p>
+        <p className="always-black">
           Saldo para despesas variáveis 
           <br />
           <span className="percentual laranja">{percentualDespesasVariaveis.toFixed(0)}%</span>
@@ -586,7 +586,7 @@ function HomePage() {
         </p>
         <br />
         <br />
-        <p>
+        <p className="always-black">
           Saldo não comprometido 
           <br />
           <span className="percentual verde">{percentualNaoComprometido.toFixed(0)}%</span>
