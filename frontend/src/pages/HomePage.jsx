@@ -16,7 +16,7 @@ const CadastroDebitoModal = ({ onClose, onSave, mes, ano, debitoParaEditar }) =>
 
   // CADASTRO
   const cadastrarDebito = async (novoDebito) => {
-    const url = `${ API_URL }/debitos`;
+    const url = `${API_URL}/debitos`;
     const metodo = 'POST';
     const mensagemErro = 'Erro ao cadastrar débito.';
 
@@ -25,7 +25,7 @@ const CadastroDebitoModal = ({ onClose, onSave, mes, ano, debitoParaEditar }) =>
 
   // EDIÇÃO
   const editarDebito = async (novoDebito) => {
-    const url = `${ API_URL }/debitos/${debitoParaEditar.id_debito}`;
+    const url = `${API_URL}/debitos/${debitoParaEditar.id_debito}`;
     const metodo = 'PUT';
     const mensagemErro = 'Erro ao atualizar débito.';
 
@@ -137,10 +137,10 @@ const EdicaoSaldoModal = ({ onClose, onSave, mes, ano, tipoSaldo, valorSaldoInic
     };
 
     if (tipoSaldo === 'disponivel') {
-      endpoint = `${ API_URL }/saldos_mensais/disponivel`;
+      endpoint = `${API_URL}/saldos_mensais/disponivel`;
       dados.saldo_disponivel = parseFloat(novoValor);
     } else if (tipoSaldo === 'variaveis') {
-      endpoint = `${ API_URL }/saldos_mensais/variaveis`;
+      endpoint = `${API_URL}/saldos_mensais/variaveis`;
       dados.saldo_despesas_variaveis = parseFloat(novoValor);
     }
 
@@ -221,6 +221,12 @@ function HomePage() {
     }
   }, [idUsuario, navegar]);
 
+  // FUNÇÃO DE LOGOFF
+  const fazerLogoff = () => {
+    localStorage.removeItem('id_usuario');
+    navegar('/login');
+  };
+
   // FUNÇÕES PARA AVANÇAR E VOLTAR O MÊS (TROCA DA TELA)
   const avancarMes = () => {
     setDataAtual(dataAnterior => {
@@ -249,7 +255,7 @@ function HomePage() {
   // FUNÇÃO PARA CARREGAR O SALDO NA TELA DO MES SELECIONADO. SE NÃO TIVER, CONSIDERA COMO 0.
   const buscarSaldos = async (idUser, mes, ano) => {
     try {
-      const resposta = await fetch(`${ API_URL }/saldos_mensais?id_usuario=${idUser}&mes=${mes}&ano=${ano}`);
+      const resposta = await fetch(`${API_URL}/saldos_mensais?id_usuario=${idUser}&mes=${mes}&ano=${ano}`);
 
       if (!resposta.ok) {
         if (resposta.status === 404) {
@@ -275,7 +281,7 @@ function HomePage() {
   // FUNÇÃO QUE CARREGA OS DÉBITOS DO MÊS/ANO NA TELA
   const buscarDebitos = async (idUser, mes, ano) => {
     try {
-      const resposta = await fetch(`${ API_URL }/obter_debitos?id_usuario=${idUser}&mes=${mes}&ano=${ano}`);
+      const resposta = await fetch(`${API_URL}/obter_debitos?id_usuario=${idUser}&mes=${mes}&ano=${ano}`);
 
       if (!resposta.ok) {
         throw new Error('Erro ao carregar os débitos');
@@ -322,7 +328,7 @@ function HomePage() {
     fecharModalConfirmacao();
 
     try {
-      const response = await fetch(`${ API_URL }/debitos/${idDebitoParaExcluir}`, {
+      const response = await fetch(`${API_URL}/debitos/${idDebitoParaExcluir}`, {
         method: 'DELETE',
       });
 
@@ -345,7 +351,7 @@ function HomePage() {
   const statusPagamento = async (debito) => {
     const novoStatus = !debito.status_pagamento;
     try {
-      const response = await fetch(`${ API_URL }/debitos/${debito.id_debito}`, {
+      const response = await fetch(`${API_URL}/debitos/${debito.id_debito}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -415,7 +421,7 @@ function HomePage() {
 
   const copiarDebitosESaldos = async () => {
     try {
-      const response = await fetch(`${ API_URL }/copiar-debitos-e-saldos`, {
+      const response = await fetch(`${API_URL}/copiar-debitos-e-saldos`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -517,8 +523,8 @@ function HomePage() {
                   <td>
                     <button className="toggle-pagamento-btn"
                       onClick={() => statusPagamento(debito)}
-                      title="Marcar/Desmarcar item como pago" 
-                      >
+                      title="Marcar/Desmarcar item como pago"
+                    >
                       {debito.status_pagamento ? '✅' : '⬜'}
                     </button>
                   </td>
@@ -579,7 +585,7 @@ function HomePage() {
         <br />
         <br />
         <p className="always-black">
-          Saldo para despesas variáveis 
+          Saldo para despesas variáveis
           <br />
           <span className="percentual laranja">{percentualDespesasVariaveis.toFixed(0)}%</span>
           <span className="valor laranja"> R$ {formatarMoeda(saldoDespesasVariaveis)} <button className="edit-btn" onClick={() => abrirModalSaldo('variaveis', saldoDespesasVariaveis)}>✏️</button> </span>
@@ -587,7 +593,7 @@ function HomePage() {
         <br />
         <br />
         <p className="always-black">
-          Saldo não comprometido 
+          Saldo não comprometido
           <br />
           <span className="percentual verde">{percentualNaoComprometido.toFixed(0)}%</span>
           <span className="valor verde">R$ {formatarMoeda(saldoNaoComprometido)}</span>
@@ -595,10 +601,21 @@ function HomePage() {
         <br />
       </div>
 
+      {/*
       <div className="botoes-footer">
         <button className="default-button">Planejamento</button>
         <button className="default-button cinza">Reservas</button>
       </div>
+      
+      */}
+      <br />
+
+      <div className="logoff-container">
+        <button className="default-button logoff-button" onClick={fazerLogoff}>
+          Sair
+        </button>
+      </div>
+
       <ToastContainer position="bottom-center" autoClose={2000} />
     </div>
   );

@@ -339,3 +339,14 @@ input {
   background-color: white;
   color: black;
 }
+
+.logoff-button {
+  background-color: #C20000;
+  color: white;
+  border: none;
+}
+
+.logoff-button:hover {
+  background-color: #A00000;
+  cursor: pointer;
+}

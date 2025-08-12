@@ -15,7 +15,7 @@ function LoginPage() {
   const [etapaRegistro, setEtapaRegistro] = useState(false);
   const [confirmarSenha, setConfirmarSenha] = useState('');
   const navegar = useNavigate();
-  
+
 
   const redirecionarParaHome = (id_usuario) => {
     localStorage.setItem('id_usuario', id_usuario);
@@ -24,13 +24,23 @@ function LoginPage() {
     }, 1500);
   };
 
+  const voltarLogin = () => {
+    setEtapaEmail(true);
+    setEtapaSenha(false);
+    setEtapaRegistro(false);
+    setEmail('');
+    setSenha('');
+    setNome('');
+    setConfirmarSenha('');
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (etapaEmail) {
       try {
         console.log(API_URL)
-        const resposta = await fetch(`${ API_URL }/check-email`, {
+        const resposta = await fetch(`${API_URL}/check-email`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -56,7 +66,7 @@ function LoginPage() {
 
     if (etapaSenha) {
       try {
-        const resposta = await fetch(`${ API_URL }/check-password`, {
+        const resposta = await fetch(`${API_URL}/check-password`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -87,7 +97,7 @@ function LoginPage() {
       }
 
       try {
-        const resposta = await fetch(`${ API_URL }/usuarios`, {
+        const resposta = await fetch(`${API_URL}/usuarios`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -190,7 +200,13 @@ function LoginPage() {
             <button type="submit" className="default-button">
               {etapaRegistro ? 'Cadastrar' : 'Avançar'}
             </button>
+            {(etapaSenha || etapaRegistro) && (
+              <button type="button" className="default-button cinza" onClick={voltarLogin}>
+                Voltar
+              </button>
+            )}
           </div>
+
         </form>
       </div>
       <ToastContainer position="bottom-center" autoClose={2000} />
