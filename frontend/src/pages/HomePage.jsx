@@ -108,7 +108,7 @@ const ConfirmacaoExclusaoModal = ({ onClose, onConfirm }) => {
   return (
     <div className="modal-overlay">
       <div className="modal-content small-modal">
-        <p>Tem certeza que deseja excluir este débito?</p>
+        <p className="always-black">Tem certeza que deseja excluir este débito?</p>
         <div className="modal-botoes">
           <button type="button" className="default-button cinza" onClick={onClose}>Não</button>
           <button type="button" className="default-button" onClick={onConfirm}>Sim</button>
