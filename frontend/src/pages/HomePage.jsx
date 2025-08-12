@@ -462,7 +462,7 @@ function HomePage() {
       </div>
       <div className="saldo-container">
         <div>
-          <h2>Saldo disponível</h2>
+          <h2 className="always-black">Saldo disponível</h2>
         </div>
         <div className="saldo-valor">
           R$ {formatarMoeda(saldoDisponivel)}
@@ -472,7 +472,7 @@ function HomePage() {
 
       <div className="checklist">
         <h2 className="left-align">Checklist de Contas</h2>
-        <table>
+        <table className="always-black">
           <thead>
             <tr>
               <th>Descrição</th>

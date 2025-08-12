@@ -24,6 +24,7 @@ body {
 
 .left-align {
   text-align: left;
+  color: black;
 }
 
 .month-selector {
@@ -324,4 +325,17 @@ body {
   cursor: pointer;
   font-size: 20px;
   padding: 0;
+}
+
+.always-black {
+  color: #000 !important;
+}
+
+label {
+  color: #000 !important;
+}
+
+input {
+  background-color: white;
+  color: black;
 }
