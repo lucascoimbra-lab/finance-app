@@ -38,36 +38,3 @@ CREATE TABLE debitos (
     vencimento DATE NOT NULL,
     status_pagamento BOOLEAN DEFAULT FALSE
 );
-
--- Reservas
-CREATE TABLE reservas (
-    id_reserva SERIAL PRIMARY KEY,
-    id_usuario INT REFERENCES usuarios(id_usuario),
-    desc_reserva VARCHAR(200),
-    valor NUMERIC(10, 2) NOT NULL,
-    mes INT CHECK (mes BETWEEN 1 AND 12),
-    ano INT CHECK (ano >= 2025 AND ano <= 2200),
-    observacao VARCHAR(200)
-);
-
--- Notificações de Controle de Saldo
-CREATE TABLE notificacoes_controle_saldo (
-    id_notificacao_controle SERIAL PRIMARY KEY,
-    id_usuario INT REFERENCES usuarios(id_usuario),
-    hora SMALLINT CHECK (hora BETWEEN 0 AND 23),
-    dom BOOLEAN DEFAULT FALSE,
-    seg BOOLEAN DEFAULT TRUE,
-    ter BOOLEAN DEFAULT FALSE,
-    qua BOOLEAN DEFAULT FALSE,
-    qui BOOLEAN DEFAULT FALSE,
-    sex BOOLEAN DEFAULT FALSE,
-    sab BOOLEAN DEFAULT FALSE
-);
-
--- Notificações do Dia de Recebimento
-CREATE TABLE notificacoes_dia_recebimento (
-    id_notificacao_recebimento SERIAL PRIMARY KEY,
-    id_usuario INT REFERENCES usuarios(id_usuario),
-    dia INT CHECK (dia BETWEEN 1 AND 31),
-    hora SMALLINT CHECK (hora BETWEEN 0 AND 23)
-);
